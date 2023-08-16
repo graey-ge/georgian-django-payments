@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<payment-avail-response>
+    <result>
+        <code>{{ result.code }}</code>
+        <desc>{{ result.desc }}</desc>
+    </result>
+    {% if result.code == 1 %}
+    <merchant-trx>{{ merchant_trx }}</merchant-trx>
+    <purchase>
+        <shortDesc>{{ short_desc}}</shortDesc>
+        <longDesc>{{ long_desc}}</longDesc>
+        <account-amount>
+            <id>{{ account_id}}</id>
+            <amount>{{ amount }}</amount>
+            <currency>981</currency>
+            <exponent>2</exponent>
+        </account-amount>
+    </purchase>
+    {% if is_withdrawal %}
+        <transaction-type>OCT</transaction-type>
+    {% endif %}
+    {% if card_id %}
+    <card>
+        <id>{{ card_id }}</id>
+    </card>
+    {% endif %}
+    {% if save_card or card_id  or is_withdrawal %}
+    <order-params>
+        <param>
+            <name>card_on_file</name>
+            <value>CIT</value>
+        </param>
+    </order-params>
+    {% endif %}
+    {% endif %}
+</payment-avail-response>
