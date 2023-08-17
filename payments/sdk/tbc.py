@@ -4,8 +4,6 @@ from typing import Dict, Tuple, TYPE_CHECKING
 import requests
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.utils import timezone
-from django.utils.timezone import localtime
 from loguru import logger
 from requests.auth import HTTPBasicAuth
 
@@ -74,15 +72,25 @@ class TbcInstallmentSDK(AbstractBankSDK):
             return data
         return response.status_code
 
+    def product_data(self):
+        products = []
+        for product_info in self.transaction.product_data:
+            products.append({
+                'price': product_info.get('amount', 0),
+                'name': product_info.get('headline', ''),
+                'quantity': product_info.get('quantity', 1),
+            })
+        return {'products': products}
+
     @property
     def start_payment_data(self):
-        # @Todo Product Details https://developers.tbcbank.ge/reference/online-installments-initiate-application
-        from ..serializers import OrderTbcInstallmentInitialSerializer
         return {
+            'invoiceId': self.transaction.id,
+            'priceTotal': self.transaction.amount,
             'merchantKey': self.merchant_key,
             'campaignId': str(self.transaction.additional_data.get('campaign_id', self.campaign_id))
             if not settings.STAGE else self.campaign_id,
-            **json.loads(json.dumps(OrderTbcInstallmentInitialSerializer(self.order).data))  # OrderedDict -> dict
+            **self.product_data()
         }
 
     def start_payment(self) -> Dict:
@@ -197,20 +205,35 @@ class TbcBNPLInstallmentSDK(AbstractBankSDK):
             raise ValidationError(f'TBC Bank Is Not Available | {url} {response.text}')
         return response.json()
 
+    def product_data(self):
+        products = []
+        for product_info in self.transaction.product_data:
+            products.append({
+                'Price': round(product_info.get('amount', 0), 2),
+                'Name': product_info.get('headline', ''),
+                'Quantity': product_info.get('quantity', 1),
+            })
+        return {'installmentProducts': products}
+
     @property
     def start_payment_data(self):
-        # @Todo Product Details https://developers.tbcbank.ge/reference/online-installments-initiate-application
-
-        from ..serializers import OrderTbcBNPLInstallmentInitialSerializer
         domain = 'https://stg.veli.store' if settings.STAGE else 'https://veli.store'
         return {
             'merchantPaymentId': self.transaction.id,
+            'amount': {
+                'currency': 'GEL',
+                'total': round(self.transaction.amount, 2),
+                'subTotal': 0,
+                'tax': 0,
+                'shipping': 0,
+            },
             'expirationMinutes': '10',
             'methods': ['4', '7'],
             'returnurl': 'https://veli.store/',
             'callbackUrl': f'{domain}/api/order/payment/tbc_payment/callback/',
             'preAuth': False,
-            **json.loads(json.dumps(OrderTbcBNPLInstallmentInitialSerializer(self.order).data))  # OrderedDict -> dict
+            'language': 'ka',
+            **self.product_data()
         }
 
     @staticmethod
