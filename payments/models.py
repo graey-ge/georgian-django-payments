@@ -11,7 +11,6 @@ from choices import PTSChoices, PTTChoices, PaymentTypeChoices, BankTypeChoices,
     ManualActionChoices
 
 
-
 class Card(models.Model):
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True)
     number = models.CharField(max_length=16)
@@ -109,6 +108,14 @@ class PaymentTransaction(models.Model):
     def engine(self) -> Union[UfcSdk]:
         return self.payment_method.engine_class(self)
 
+    @property
+    def product_data(self) -> list:
+        """
+        :return:
+        Example: [{'headline','product1, 'amount' : 1.23, 'quantity': 1, 'product_id': 1}]
+        """
+        raise NotImplementedError
+
     def set_need_manual_action(self, action, commit=True):
         self.manual_action = action
         if commit:
@@ -152,10 +159,6 @@ class PaymentTransaction(models.Model):
     def run(self) -> Union[PTSChoices, dict]:
         if self.transaction_type in [PTTChoices.PAY, PTTChoices.CONTRIBUTION]:
             return self._initial_payment()
-        # if self.transaction_type == PTTChoices.REFUND:
-        #     return self._initial_refund()
-        # if self.transaction_type == PTTChoices.CASHBACK:
-        #     return self._initial_cashback()
 
     @property
     def text_status(self):
