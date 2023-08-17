@@ -80,9 +80,8 @@ class BogPaySDK(AbstractBogSDK):
     _PAY_URL = "https://ipay.ge/?order_id=%s&locale=ka"
 
     def pay_with_new_card(self) -> Dict:
-        # @TODO Ipay need Product Listing   https://api.bog.ge/docs/en/ipay/create-order
-        from order.serializers import OrderBogInitialSerializer
         request_data = {
+            'shop_order_id': self.transaction.id,
             'intent': BOG['intent'],
             'locale': "ka",
             'redirect_url': BOG['redirect_url'] % self.transaction.id,
@@ -96,7 +95,7 @@ class BogPaySDK(AbstractBogSDK):
                     }
                 }
             ],
-            **json.loads(json.dumps(OrderBogInitialSerializer(self.order).data))  # OrderedDict -> dict
+            **self.product_data()
         }
         data = self._request(self.__REQUEST_ORDER_URL, data=json.dumps(request_data))
         status = False
@@ -108,6 +107,16 @@ class BogPaySDK(AbstractBogSDK):
             'trx_id': data.get('order_id', ''),
             'payment_hash': data.get('payment_hash', '')
         }
+
+    def product_data(self):
+        products_information = self.transaction.product_data
+        items = [{
+            'amount': str(round(product_info.get('amount', 0))),
+            'description': product_info.get('headline', ''),
+            'quantity': str(product_info.get('quantity', 1)),
+            'product_id': str(product_info.get('product_id', 0)),
+        } for product_info in products_information]
+        return {'items': items}
 
     def pay_with_saved_card(self) -> Dict:
         # cd9010e87ff894abf4e7c97336e480c6e24d0ad4 - გადახდილი - დაბრუნებული
@@ -208,11 +217,22 @@ class BogInstallmentSDK(AbstractBogSDK):
             'client_id': self.client_id
         }))
 
-    def start_payment(self) -> Dict:
-        # @TODO Ipay need Product Listing   https://api.bog.ge/docs/en/installment/create-order
+    def product_data(self):
+        products_information = self.transaction.product_data
 
-        from order.serializers import OrderBogInstallmentInitialSerializer
+        cart_items = [{
+            'amount': str(round(product_info.get('amount', 0))),
+            'item_description': product_info.get('headline', ''),
+            'quantity': str(product_info.get('quantity', 1)),
+            'item_vendor_code': str(product_info.get('product_id', 0)),
+        } for product_info in products_information]
+        return {
+            'cart_items': cart_items
+        }
+
+    def start_payment(self) -> Dict:
         request_data = {
+            'shop_order_id': self.transaction.id,
             "intent": "LOAN",
             "installment_month": self.installment_options['month'],
             "installment_type": self.installment_options["discount_code"],
@@ -228,7 +248,7 @@ class BogInstallmentSDK(AbstractBogSDK):
                     }
                 }
             ],
-            **json.loads(json.dumps(OrderBogInstallmentInitialSerializer(self.order).data))  # OrderedDict -> dict
+            **self.product_data()
         }
         data = self._request(self.__REQUEST_INSTALLMENT_URL, method='POST', data=json.dumps(request_data))
         status = False
