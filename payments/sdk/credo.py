@@ -53,15 +53,26 @@ class CredoInstallmentSDK(AbstractBankSDK):
         generated_check = hashlib.md5(generated_str.encode()).hexdigest()
         return generated_check
 
+    def product_data(self):
+        products = []
+        for product_info in self.transaction.product_data:
+            products.append({
+                'price': int(product_info.get('amount', 0) * 100),
+                'title': product_info.get('headline', ''),
+                'amount': product_info.get('quantity', 1),
+                'id': str(product_info.get('product_id', 0)),
+                'type': 0
+            })
+        return {'products': products}
+
     @property
     def start_payment_data(self):
-        # @TODO Need Product Details
-        order_data = json.loads(json.dumps(CredoInstallmentInitialSerializer(self.order).data))
+        product_data = self.product_data()
         data = {
             "merchantId": self.merchant_id,
-            "check": self.generate_check_string(order_data['products']),
+            "check": self.generate_check_string(product_data['products']),
             'orderCode': self.transaction.id,
-            **order_data
+            **self.product_data()
         }
         return {
             "credoinstallment": str(data).replace("'", '"')
