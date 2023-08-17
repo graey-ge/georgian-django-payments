@@ -1,5 +1,4 @@
 import hashlib
-import json
 from datetime import timedelta
 from typing import Dict, Tuple
 
@@ -9,9 +8,8 @@ from django.utils import timezone
 from django.utils.timezone import localtime
 from rest_framework.exceptions import ValidationError
 
-from .base import AbstractBankSDK
 from payments.choices import ManualActionChoices
-from payments.serialaizers import CredoInstallmentInitialSerializer
+from .base import AbstractBankSDK
 
 CREDO = settings.PAYMENT_CREDENTIALS['credo']
 
