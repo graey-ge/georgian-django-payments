@@ -1,5 +1,5 @@
 [build-system]
-requires = ['setuptools>=40.8.0', 'geopayment>=0.6.3', 'loguru==0.7.0']
+requires = ['setuptools>=40.8.0']
 build-backend = 'setuptools.build_meta'
 
 [project]

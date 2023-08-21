@@ -108,7 +108,7 @@ class GCBank(AbstractBankSDK):
             },
             "merchant_trx": self.transaction.trx,
             "short_desc": f'ID: {self.transaction.id}',
-            "long_desc": f'Greay/{self.transaction.id}',
+            "long_desc": f'graey/{self.transaction.id}',
             "account_id": GEORGIAN_CARD_SETTINGS['account_id'],
             "amount": int(self.transaction.amount * 100),
             "save_card": False,  # self.transaction.save_card,
