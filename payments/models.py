@@ -103,6 +103,7 @@ class PaymentTransaction(models.Model):
     class Meta:
         verbose_name = _('Payment Transaction')
         verbose_name_plural = _('Payment Transactions')
+        abstract = True
 
     @property
     def engine(self) -> Union[UfcSdk]:
