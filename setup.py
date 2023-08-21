@@ -7,6 +7,7 @@ with open("README.rst") as f:
 setup(
     name="georgian-django-payments",
     author="Greay",
+    version='1.0',
     author_email="info@graey.ge",
     description="Georgian Payments",
     long_description=readme,
