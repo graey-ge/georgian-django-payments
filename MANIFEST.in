@@ -1,3 +1,3 @@
 include LICENSE README.md
-recursive-include payments *.html *.js *.mo *.po *.wsdl *.xsd *.xml
+recursive-include georgian_payments *.html *.js *.mo *.po *.wsdl *.xsd *.xml
 recursive-include static *

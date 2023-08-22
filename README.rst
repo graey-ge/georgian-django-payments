@@ -17,7 +17,7 @@ and then add it to your installed apps:
 
     INSTALLED_APPS = [
         ...,
-        "georgian-django-payments",
+        "georgian_payments",
         ...,
     ]
 
