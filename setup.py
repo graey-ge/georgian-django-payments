@@ -15,7 +15,6 @@ setup(
     packages=['payments'],
     classifiers=[
         "Framework :: Django"
-        "Programming Language :: Python",
     ],
     install_requires=['Django >= 3.1',
                       "requests",

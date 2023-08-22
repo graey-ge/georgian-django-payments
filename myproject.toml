@@ -12,11 +12,10 @@ keywords = ["one", "two"]
 license = { text = "BSD-3-Clause" }
 classifiers = [
     "Framework :: Django",
-    "Programming Language :: Python :: 3",
 ]
 dependencies = [
     'Django >= 3.1',
     "requests",
-    'geopayment>=0.6.3',
+    'geopayment',
     'loguru==0.7.0',
 ]
