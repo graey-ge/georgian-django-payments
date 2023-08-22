@@ -1,5 +1,4 @@
-georgian-django-payments
-===============
+# georgian-django-payments
 
 ----
 

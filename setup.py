@@ -10,11 +10,6 @@ setup(
     version='1.0',
     author_email="info@graey.ge",
     description="Georgian Payments",
-    long_description=readme,
-    use_scm_version={
-        "version_scheme": "post-release",
-        "write_to": "payments/version.py",
-    },
     setup_requires=["setuptools_scm"],
     url="https://github.com/graey-ge/georgian-django-payments",
     packages=['payments'],
