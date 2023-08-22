@@ -11,14 +11,12 @@ from django.utils.timezone import localtime
 from loguru import logger
 from requests.auth import HTTPBasicAuth
 
-from payments.choices import PTTChoices, ManualActionChoices
-from payments.sdk.base import AbstractBankSDK
-from payments.utils import requests_to_curl, BearerAuth
+from georgian_payments.choices import PTTChoices, ManualActionChoices
+from georgian_payments.sdk.base import AbstractBankSDK
+from georgian_payments.utils import requests_to_curl, BearerAuth
 
 if TYPE_CHECKING:
-    from payments.models import PaymentTransaction
-
-BOG = settings.PAYMENT_CREDENTIALS['bog']
+    from georgian_payments.models import PaymentTransaction
 
 
 class PreAuthChoices(Enum):
@@ -32,13 +30,15 @@ class AbstractBogSDK(AbstractBankSDK, ABC):
     __BASE_URL = 'https://ipay.ge/opay/api/v1'
     __TOKEN_URL = f'{__BASE_URL}/oauth2/token'
 
+    BOG = settings.PAYMENT_CREDENTIALS['bog']
+
     def __init__(self, transaction: 'PaymentTransaction', **kwargs):
         super().__init__(transaction, **kwargs)
         self.app_id = None
         self.token_expires_in = None
-        self.merchant_id = BOG['merchant_id']
-        self.client_id = BOG['client_id']
-        self.secret_key = BOG['secret_key']
+        self.merchant_id = self.BOG['merchant_id']
+        self.client_id = self.BOG['client_id']
+        self.secret_key = self.BOG['secret_key']
         self.session = requests.Session()
         self.session.auth = HTTPBasicAuth(self.client_id, self.secret_key)
         self.is_generated_token = False
@@ -78,15 +78,16 @@ class BogPaySDK(AbstractBogSDK):
     __CHECK_ORDER_STATUS_URL = f'{__BASE_URL}/checkout/payment/%s'
     __REFUND_URL = f'{__BASE_URL}/checkout/refund'
     _PAY_URL = "https://ipay.ge/?order_id=%s&locale=ka"
+    BOG = settings.PAYMENT_CREDENTIALS['bog']
 
     def pay_with_new_card(self) -> Dict:
         request_data = {
             'shop_order_id': self.transaction.id,
-            'intent': BOG['intent'],
+            'intent': self.BOG['intent'],
             'locale': "ka",
-            'redirect_url': BOG['redirect_url'] % self.transaction.id,
-            'show_shop_order_id_on_extract': BOG['show_shop_order_id_on_extract'],
-            'capture_method': BOG['capture_method'],
+            'redirect_url': self.BOG['redirect_url'] % self.transaction.id,
+            'show_shop_order_id_on_extract': self.BOG['show_shop_order_id_on_extract'],
+            'capture_method': self.BOG['capture_method'],
             'purchase_units': [
                 {
                     "amount": {
@@ -136,7 +137,7 @@ class BogPaySDK(AbstractBogSDK):
         if data.get('status') in ['in_progress', 'success']:
             status = True
         trx_id = data.get('order_id', '')
-        redirect_url = BOG['redirect_url'] % trx_id if status else BOG['redirect_fail_url']
+        redirect_url = self.BOG['redirect_url'] % trx_id if status else self.BOG['redirect_fail_url']
         return {
             'status': status,
             'redirect_url': redirect_url,
@@ -204,6 +205,7 @@ class BogInstallmentSDK(AbstractBogSDK):
     __CHECK_INSTALLMENT_STATUS_URL = f'{__INSTALLMENT_BASE_URL}/installment/checkout/%s'
     image_path = 'admin/img/bank/bog.jpeg'
     _PAY_URL = "https://installment.bog.ge/?order_id=%s&locale=ka"
+    BOG = settings.PAYMENT_CREDENTIALS['bog']
 
     def __init__(self, transaction: 'PaymentTransaction'):
         super().__init__(transaction)
@@ -236,9 +238,9 @@ class BogInstallmentSDK(AbstractBogSDK):
             "intent": "LOAN",
             "installment_month": self.installment_options['month'],
             "installment_type": self.installment_options["discount_code"],
-            "success_redirect_url": BOG["installment_success_redirect_url"] % self.transaction.id,
-            "fail_redirect_url": BOG["installment_fail_redirect_url"] % self.transaction.id,
-            "reject_redirect_url": BOG["installment_reject_redirect_url"] % self.transaction.id,
+            "success_redirect_url": self.BOG["installment_success_redirect_url"] % self.transaction.id,
+            "fail_redirect_url": self.BOG["installment_fail_redirect_url"] % self.transaction.id,
+            "reject_redirect_url": self.BOG["installment_reject_redirect_url"] % self.transaction.id,
             "validate_items": False,
             "purchase_units": [
                 {

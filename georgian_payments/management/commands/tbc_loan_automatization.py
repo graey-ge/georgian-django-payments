@@ -2,9 +2,9 @@ from django.core.management import BaseCommand
 
 from loguru import logger
 
-from payments.choices import ManualActionChoices
-from payments.models import PaymentTransaction
-from payments.sdk.tbc import TbcInstallmentSDK
+from georgian_payments.choices import ManualActionChoices
+from georgian_payments.models import PaymentTransaction
+from georgian_payments.sdk.tbc import TbcInstallmentSDK
 
 
 class Command(BaseCommand):

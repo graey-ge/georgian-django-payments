@@ -1,4 +1,3 @@
-from .checkout import *
 from .space import *
 from .tbc import *
 from .bog import *

@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Dict, Tuple
 from django.templatetags.static import static
 
 if TYPE_CHECKING:
-    from payments.models import PaymentTransaction
+    from georgian_payments.models import PaymentTransaction
 
 
 class AbstractBankSDK:

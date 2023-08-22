@@ -14,9 +14,9 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
-from payments.choices import CardTypeChoices, BankTypeChoices, PTSChoices
-from payments.models import PaymentTransaction
-from payments.sdk.georgian_card import GCBank
+from georgian_payments.choices import CardTypeChoices, BankTypeChoices, PTSChoices
+from georgian_payments.models import PaymentTransaction
+from georgian_payments.sdk.georgian_card import GCBank
 
 GEORGIAN_CARD_SETTINGS = settings.PAYMENT_CREDENTIALS['georgian_card']
 

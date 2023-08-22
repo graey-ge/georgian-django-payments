@@ -10,8 +10,8 @@ from django.utils.timezone import localtime
 from geopayment import TBCProvider
 from loguru import logger
 
-from payments.choices import BankTypeChoices, CardTypeChoices
-from payments.sdk.base import AbstractBankSDK
+from georgian_payments.choices import BankTypeChoices, CardTypeChoices
+from georgian_payments.sdk.base import AbstractBankSDK
 
 
 class UfcSdk(AbstractBankSDK, TBCProvider):

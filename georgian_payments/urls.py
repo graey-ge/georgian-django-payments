@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework import routers
 
-from payments.views import BogCallBackViewSet, GeorgianCardCallBackViewSet, SpaceCallBackViewSet, TBCCallBackViewSet
+from georgian_payments.views import BogCallBackViewSet, GeorgianCardCallBackViewSet, SpaceCallBackViewSet, TBCCallBackViewSet
 
 
 callback = routers.SimpleRouter()

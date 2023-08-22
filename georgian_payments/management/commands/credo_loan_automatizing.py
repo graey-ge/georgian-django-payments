@@ -4,8 +4,8 @@ from django.core.management import BaseCommand
 from django.utils import timezone
 from django.utils.timezone import localtime
 
-from payments.choices import BankTypeChoices, PaymentTypeChoices, PTTChoices, PTSChoices
-from payments.models import PaymentTransaction
+from georgian_payments.choices import BankTypeChoices, PaymentTypeChoices, PTTChoices, PTSChoices
+from georgian_payments.models import PaymentTransaction
 
 
 class Command(BaseCommand):

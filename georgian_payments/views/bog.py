@@ -9,9 +9,9 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
-from payments.choices import CardTypeChoices, BankTypeChoices, PTTChoices
-from payments.models import PaymentTransaction
-from payments.utils import remove_lists_from_dict_values
+from georgian_payments.choices import CardTypeChoices, BankTypeChoices, PTTChoices
+from georgian_payments.models import PaymentTransaction
+from georgian_payments.utils import remove_lists_from_dict_values
 
 
 class BogCallBackViewSet(ViewSet):

@@ -4,8 +4,8 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from payments.models import PaymentTransaction
-from payments.serialaizers import SpaceCallbackSerializer
+from georgian_payments.models import PaymentTransaction
+from georgian_payments.serialaizers import SpaceCallbackSerializer
 
 
 class SpaceCallBackViewSet(GenericViewSet):

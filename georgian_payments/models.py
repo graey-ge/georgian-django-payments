@@ -5,9 +5,9 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from payments.sdk import UfcSdk, SpaceInstallmentSDK, BogPaySDK, GCBank, TbcInstallmentSDK, BogInstallmentSDK, \
+from georgian_payments.sdk import UfcSdk, SpaceInstallmentSDK, BogPaySDK, GCBank, TbcInstallmentSDK, BogInstallmentSDK, \
     CredoInstallmentSDK
-from payments.choices import PTSChoices, PTTChoices, PaymentTypeChoices, BankTypeChoices, CardTypeChoices, \
+from georgian_payments.choices import PTSChoices, PTTChoices, PaymentTypeChoices, BankTypeChoices, CardTypeChoices, \
     ManualActionChoices
 
 
@@ -88,11 +88,12 @@ class PaymentTransaction(models.Model):
 
     save_card = models.BooleanField(default=True)
     bank_card = models.ForeignKey(
-        'Card', verbose_name='Card', related_name='transactions', on_delete=models.SET_NULL, null=True,
+        'georgian_payments.Card', verbose_name='Card', related_name='payment_transactions', on_delete=models.SET_NULL,
+        null=True,
         blank=True
     )
     payment_method = models.ForeignKey(
-        PaymentMethod, verbose_name='Payment Method', related_name='payment_transactions',
+        'georgian_payments.PaymentMethod', verbose_name='Payment Method', related_name='payment_transactions',
         on_delete=models.PROTECT
     )
     manual_action = models.PositiveSmallIntegerField(
@@ -113,7 +114,7 @@ class PaymentTransaction(models.Model):
     def product_data(self) -> list:
         """
         :return:
-        Example: [{'headline','product1, 'amount' : 1.23, 'quantity': 1, 'product_id': 1}]
+        Example: [{'headline':'product1, 'amount' : 1.23, 'quantity': 1, 'product_id': 1}]
         """
         raise NotImplementedError
 

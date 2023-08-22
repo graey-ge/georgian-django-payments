@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.serializers import Serializer
 from rest_framework.viewsets import GenericViewSet
 
-from payments.models import PaymentTransaction
+from georgian_payments.models import PaymentTransaction
 
 
 class TbcSerializer(Serializer):
