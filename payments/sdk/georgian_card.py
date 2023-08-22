@@ -8,8 +8,8 @@ from django.utils import timezone
 from django.utils.timezone import localtime
 from loguru import logger
 
-from choices import PaymentTypeChoices
-from sdk import AbstractBankSDK
+from payments.choices import PaymentTypeChoices
+from payments.sdk.base import AbstractBankSDK
 
 GEORGIAN_CARD_SETTINGS = settings.PAYMENT_CREDENTIALS['georgian_card']
 

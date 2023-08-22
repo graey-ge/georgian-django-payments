@@ -9,7 +9,7 @@ from django.utils.timezone import localtime
 from rest_framework.exceptions import ValidationError
 
 from payments.choices import ManualActionChoices
-from .base import AbstractBankSDK
+from payments.sdk.base import AbstractBankSDK
 
 CREDO = settings.PAYMENT_CREDENTIALS['credo']
 
