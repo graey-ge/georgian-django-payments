@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from loguru import logger
 from requests.auth import HTTPBasicAuth
 
+from georgian_payments.bank_settings import TBC_SETTINGS
 from georgian_payments.choices import ManualActionChoices
 from georgian_payments.sdk.base import AbstractBankSDK
 from georgian_payments.utils import BearerAuth
@@ -14,6 +15,7 @@ from georgian_payments.utils import BearerAuth
 if TYPE_CHECKING:
     from georgian_payments.models import PaymentTransaction
 
+TBC = TBC_SETTINGS
 
 
 class TbcInstallmentSDK(AbstractBankSDK):
@@ -28,8 +30,6 @@ class TbcInstallmentSDK(AbstractBankSDK):
     __STATUS_LOAN = f'{__BASE_URL}{__API_VERSION}/online-installments/applications/%s/status'
     __STATUS_CHANGES = f'{__BASE_URL}{__API_VERSION}/online-installments/merchant/applications/status-changes'
     __STATUS_CHANGES_SYNC = f'{__BASE_URL}{__API_VERSION}/online-installments/merchant/applications/status-changes-sync'
-
-    TBC = settings.PAYMENT_CREDENTIALS['tbc']
 
     client_id = TBC['client_id']
     secret_key = TBC['secret_key']
@@ -178,7 +178,6 @@ class TbcBNPLInstallmentSDK(AbstractBankSDK):
     __INITIAL_PAYMENT = f'{__BASE_URL}{__API_VERSION}/tpay/payments'
     __GENERATE_TOKEN = f'{__BASE_URL}{__API_VERSION}/tpay/access-token'
     __STATUS_LOAN = f'{__BASE_URL}{__API_VERSION}/tpay/payments/%s'
-    TBC = settings.PAYMENT_CREDENTIALS['tbc']
 
     client_id = TBC['bnpl_client_id']
     client_secret = TBC['bnpl_client_secret']
@@ -197,7 +196,7 @@ class TbcBNPLInstallmentSDK(AbstractBankSDK):
     def _request(self, url, method='POST', data=None, is_urlencoded=False):
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded' if is_urlencoded else 'application/json',
-            "apikey": self.TBC['bnpl_api_key'],
+            "apikey": TBC['bnpl_api_key'],
             "accept": "text/plain",
         }
         if url != self.__GENERATE_TOKEN:

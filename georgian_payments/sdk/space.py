@@ -5,15 +5,16 @@ import requests
 from django.conf import settings
 from rest_framework.exceptions import ValidationError
 
+from georgian_payments.bank_settings import SPACE_SETTINGS
 from georgian_payments.choices import ManualActionChoices
 from georgian_payments.sdk.base import AbstractBankSDK
 
+SPACE = SPACE_SETTINGS
 
 
 class SpaceInstallmentSDK(AbstractBankSDK):
     _NAME = 'SPACE_INSTALLMENT'
     unique_by_key = 'Status'
-    SPACE = settings.PAYMENT_CREDENTIALS['space']
 
     __BASE_URL = SPACE['base_url']
     __API_VERSION = 'v1'

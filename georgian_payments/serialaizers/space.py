@@ -2,7 +2,9 @@ from django.conf import settings
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import Serializer, CharField
 
-SPACE = settings.PAYMENT_CREDENTIALS['space']
+from georgian_payments.bank_settings import SPACE_SETTINGS
+
+SPACE = SPACE_SETTINGS
 
 
 class SpaceCallbackSerializer(Serializer):

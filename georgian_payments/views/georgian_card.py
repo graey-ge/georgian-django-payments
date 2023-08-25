@@ -14,11 +14,12 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
+from georgian_payments.bank_settings import GEORGIAN_CARD_SETTINGS
 from georgian_payments.choices import CardTypeChoices, BankTypeChoices, PTSChoices
 from georgian_payments.models import PaymentTransaction
 from georgian_payments.sdk.georgian_card import GCBank
 
-GEORGIAN_CARD_SETTINGS = settings.PAYMENT_CREDENTIALS['georgian_card']
+GEORGIAN_CARD = GEORGIAN_CARD_SETTINGS
 
 
 class GeorgianCardCallBackViewSet(ViewSet):
@@ -72,7 +73,7 @@ class GeorgianCardCallBackViewSet(ViewSet):
             return self.fail_check('User Is Not Active')
         if transaction.status != PTSChoices.PENDING:
             return self.fail_check('Bad Transaction Status In Veli')
-        if GEORGIAN_CARD_SETTINGS['merchant_id'] != request.query_params.get('merch_id'):
+        if GEORGIAN_CARD['merchant_id'] != request.query_params.get('merch_id'):
             return self.fail_check('Merchant Not Found')
         return self.accept_check(transaction)
 

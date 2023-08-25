@@ -8,9 +8,11 @@ from django.utils import timezone
 from django.utils.timezone import localtime
 from rest_framework.exceptions import ValidationError
 
+from georgian_payments.bank_settings import CREDO_SETTINGS
 from georgian_payments.choices import ManualActionChoices
 from georgian_payments.sdk.base import AbstractBankSDK
 
+CREDO = CREDO_SETTINGS
 
 
 class CredoInstallmentSDK(AbstractBankSDK):
@@ -20,15 +22,12 @@ class CredoInstallmentSDK(AbstractBankSDK):
     __BASE_URL = 'https://ganvadeba.credo.ge'
     __INITIAL_LOAN = f'{__BASE_URL}/widget_api/index.php/'
     __STATUS_LOAN = f'{__BASE_URL}/widget/api.php?merchantId=%s&orderCode=%s'
-    CREDO = settings.PAYMENT_CREDENTIALS['credo']
-
 
     merchant_id = CREDO['merchant_id']
     secret_key = CREDO['secret_key']
 
     image_path = 'admin/img/bank/credo.svg'
     _PAY_URL = 'https://ganvadeba.credo.ge/installment/?OrderHash=%s'
-
 
     def __init__(self, transaction: 'PaymentTransaction', **kwargs):
         super().__init__(transaction, **kwargs)

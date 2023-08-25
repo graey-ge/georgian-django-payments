@@ -2,15 +2,16 @@ import json
 from typing import Union, Dict, Tuple
 
 import requests
-from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.timezone import localtime
 from loguru import logger
 
+from georgian_payments.bank_settings import GEORGIAN_CARD_SETTINGS
 from georgian_payments.choices import PaymentTypeChoices
 from georgian_payments.sdk.base import AbstractBankSDK
 
+GEORGIAN_CARD = GEORGIAN_CARD_SETTINGS
 
 
 class GCBank(AbstractBankSDK):
@@ -19,7 +20,6 @@ class GCBank(AbstractBankSDK):
     APP_PORTAL = 'B017853764E36EB69E831F9B46880E61'
     pan_key = 'p.maskedPan'
     _NAME = 'GEORGIAN_CARD'
-    GEORGIAN_CARD_SETTINGS = settings.PAYMENT_CREDENTIALS['georgian_card']
     __BASE_URL = 'https://mpi.gc.ge'
     __REQUEST_TRANSACTION_URL = f'{__BASE_URL}/page1/'
     __REQUEST_TRANSACTION_SUBSCRIPTION = f'{__BASE_URL}/open/api/v4/{APP_PORTAL}/payment/%s/start'
@@ -28,12 +28,11 @@ class GCBank(AbstractBankSDK):
                           f'?identifier=FIDS9ECTGA6Q7API&password=V9ZGM0CTE8J63HR4ONI7'
     __CHECK_STATUS_URL = f'{__BASE_URL}/open/api/v4/{APP_PORTAL}/merchant/history/trx/%s'
     __REFUND_URL = f'{__BASE_URL}/open/api/v4/{APP_PORTAL}/merchant/history/trx/%s/refund/?currency=GEL&amount=%s'
-    _PAY_URL = f"{__REQUEST_TRANSACTION_URL}?merch_id={GEORGIAN_CARD_SETTINGS['merchant_id']}" \
-               f"&back_url_s={GEORGIAN_CARD_SETTINGS['back_url_s']}&back_url_f={GEORGIAN_CARD_SETTINGS['back_url_f']}" \
+    _PAY_URL = f"{__REQUEST_TRANSACTION_URL}?merch_id={GEORGIAN_CARD['merchant_id']}" \
+               f"&back_url_s={GEORGIAN_CARD['back_url_s']}&back_url_f={GEORGIAN_CARD['back_url_f']}" \
                f"&o.transaction_id=%s&lang_code=%s"
     __APPLE_ACCEPT_URL = f'{__BASE_URL}/open/api/v4/{APP_PORTAL}/payment/%s/applepay/accept'
     __APPLE_CHECK_TRANS_URL = f'{__BASE_URL}/open/api/v4/{APP_PORTAL}/payment/%s'
-
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -82,8 +81,8 @@ class GCBank(AbstractBankSDK):
         r = requests.post(
             self.__REQUEST_TRANSACTION_SUBSCRIPTION % token,
             data={
-                'merchantId': self.GEORGIAN_CARD_SETTINGS['merchant_id'],
-                'returnUrl': self.GEORGIAN_CARD_SETTINGS['back_url_s'] % (self.lang, self.transaction.id),
+                'merchantId': GEORGIAN_CARD['merchant_id'],
+                'returnUrl': GEORGIAN_CARD['back_url_s'] % (self.lang, self.transaction.id),
                 'lang': 'ka',
                 'params.transaction_id': self.transaction.id
             },
@@ -95,7 +94,7 @@ class GCBank(AbstractBankSDK):
         logger.info(f'GC : {data}')
         return {
             'status': True,
-            'redirect_url': self.GEORGIAN_CARD_SETTINGS['back_url_s'] % (self.lang, self.transaction.id),
+            'redirect_url': GEORGIAN_CARD['back_url_s'] % (self.lang, self.transaction.id),
             'trx_id': token,
             'payment_hash': token
         }
@@ -110,7 +109,7 @@ class GCBank(AbstractBankSDK):
             "merchant_trx": self.transaction.trx,
             "short_desc": f'ID: {self.transaction.id}',
             "long_desc": f'graey/{self.transaction.id}',
-            "account_id": self.GEORGIAN_CARD_SETTINGS['account_id'],
+            "account_id": GEORGIAN_CARD['account_id'],
             "amount": int(self.transaction.amount * 100),
             "save_card": False,  # self.transaction.save_card,
             "card_id": None,  # self.transaction.bank_card.rec_id if self.transaction.bank_card_id else None,
